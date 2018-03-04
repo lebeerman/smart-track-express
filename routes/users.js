@@ -22,8 +22,15 @@ router.post('/', (req, res, next) => {
   oktaClient
     .createUser(newUser)
     .then(user => {
-      res.status(201);
+      // add the validated + authorized user to the api database
       res.send(user);
+      console.log(user)
+      queries
+        .createUser(user)
+        .then(user => {
+          res.status(201).json({message: 'Welcome to Smart Traks!'});
+        })
+        .catch(console.error);
     })
     .catch(next)
     // .catch(err => {
@@ -34,37 +41,31 @@ router.post('/', (req, res, next) => {
     // });
 });
 // Middleware --- all the routing needed for CRUD funcitonality!
-// List all the Goals
-router.get("/db", (request, response) => {
-    queries.list().then(goals => {
-        response.json({goals});
-    }).catch(console.error);
+// List all the USERS
+router.get("/db", (req, res, next) => {
+    queries.listUsers().then(users => {
+        res.json({users});
+    }).catch(next);
 });
-// List a single goal as response
-router.get("/db/:id", (request, response) => {
-    queries.read(request.params.id).then(goals => {
-        goals
-            ? response.json({goals})
-            : response.sendStatus(404)
-    }).catch(console.error);
-});
-// Add a goal to goals database
-router.post("/db", (request, response) => {
-    queries.create(request.body).then(goal => {
-        response.status(201).json({goals: goal});
-    }).catch(console.error);
+// List a single user as res
+router.get("/db/:id", (req, res, next) => {
+    queries.readUser(req.params.id).then(users => {
+        users
+            ? res.json({users})
+            : res.sendStatus(404)
+    }).catch(next);
 });
 // remove a goal by ID from the database
-router.delete("/db/:id", (request, response) => {
-    queries.delete(request.params.id).then(() => {
-        response.sendStatus(204);
-    }).catch(console.error);
+router.delete("/db/:id", (req, res, next) => {
+    queries.deleteUser(req.params.id).then(() => {
+        res.sendStatus(204);
+    }).catch(next);
 });
-// update a goal in the database
-router.put("/db/:id", (request, response) => {
-    queries.update(request.params.id, request.body).then(resolution => {
-        response.json({goal: resolution[0]});
-    }).catch(console.error);
+// update a user in the database
+router.put("/db/:id", (req, res, next) => {
+    queries.updateUser(req.params.id, req.body).then(resolution => {
+        res.json({goal: resolution[0]});
+    }).catch(next);
 });
 
 module.exports = router;

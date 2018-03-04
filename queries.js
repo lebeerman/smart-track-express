@@ -2,57 +2,58 @@ const database = require('./database-connection');
 
 module.exports = {
   // goal management
-  list() {
-    return database('smartgoals').select();
+  listGoals() {
+    return database('goals').select();
   },
-  read(id) {
-    return database('smartgoals')
+  readGoals(id) {
+    return database('goals')
       .where('id', id)
       .select()
       .first();
   },
   create(goal) {
-    return database('smartgoals')
+    return database('goals')
       .insert(goal)
       .returning('*')
       .then(record => record[0]);
   },
-  update(id, goal) {
-    return database('smartgoals')
+  updateGoal(id, goal) {
+    return database('goals')
       .update(goal)
       .where('id', id)
       .returning('*')
       .then(record => record[0]);
   },
-  delete(id) {
-    return database('smartgoals')
-      .where('id', id)
+  deleteGoal(value) {
+    console.log('DELETING');
+    return database('goals')
+      .where('owner', value)
       .del();
   },
   // users management
-  list() {
+  listUsers() {
     return database('users').select();
   },
-  read(id) {
+  readUser(id) {
     return database('users')
       .where('id', id)
       .select()
       .first();
   },
-  create(goal) {
+  createUser(profile) {
     return database('users')
-      .insert(goal)
+      .insert(profile)
       .returning('*')
       .then(record => record[0]);
   },
-  update(id, username) {
+  updateUser(id, username) {
     return database('users')
       .update(username)
       .where('id', id)
       .returning('*')
       .then(record => record[0]);
   },
-  delete(id) {
+  deleteUser(id) {
     return database('users')
       .where('id', id)
       .del();

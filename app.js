@@ -20,7 +20,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -30,13 +30,13 @@ app.use('/api/users', users);
 // Middleware --- all the routing needed for CRUD funcitonality!
 // List all the Goals
 app.get("/goals", (request, response) => {
-    queries.list().then(goals => {
+    queries.listGoals().then(goals => {
         response.json({goals});
     }).catch(console.error);
 });
 // List a single goal as response
 app.get("/goals/:id", (request, response) => {
-    queries.read(request.params.id).then(goals => {
+    queries.readGoals(request.params.id).then(goals => {
         goals
             ? response.json({goals})
             : response.sendStatus(404)
@@ -44,25 +44,26 @@ app.get("/goals/:id", (request, response) => {
 });
 // Add a goal to goals database
 app.post("/goals", (request, response) => {
+    console.log('CREATE',request.body)
     queries.create(request.body).then(goal => {
-        response.status(201).json({goals: goal});
+        response.status(201).json({goal});
     }).catch(console.error);
 });
 // remove a goal by ID from the database
 app.delete("/goals/:id", (request, response) => {
-    queries.delete(request.params.id).then(() => {
+    queries
+      .deleteGoal(request.params.id)
+      .then(() => {
         response.sendStatus(204);
-    }).catch(console.error);
+      })
+      .catch(console.error);
 });
 // update a goal in the database
 app.put("/goals/:id", (request, response) => {
-    queries.update(request.params.id, request.body).then(resolution => {
-        response.json({goal: resolution[0]});
+    queries.updateGoal(request.params.id, request.body).then(goal => {
+        response.json({goal});
     }).catch(console.error);
 });
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
