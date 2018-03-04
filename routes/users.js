@@ -24,15 +24,17 @@ router.post('/', (req, res, next) => {
     .then(user => {
       // add the validated + authorized user to the api database
       res.send(user);
-      console.log(user)
-      queries
-        .createUser(user)
-        .then(user => {
-          res.status(201).json({message: 'Welcome to Smart Traks!'});
-        })
-        .catch(console.error);
+      console.log(user.profile);
+      queries.createUser({
+        profile: {
+          firstName: user.profile.firstName,
+          lastName: user.profile.lastName,
+          email: user.profile.email
+        }
+      });
+      res.end();
     })
-    .catch(next)
+    .catch(next);
     // .catch(err => {
     //   console.log('In the oktaClient FAIL: ', err)
     //   res.status(400);
@@ -44,7 +46,7 @@ router.post('/', (req, res, next) => {
 // List all the USERS
 router.get("/db", (req, res, next) => {
     queries.listUsers().then(users => {
-        res.json({users});
+        res.json({users:users});
     }).catch(next);
 });
 // List a single user as res
@@ -63,8 +65,8 @@ router.delete("/db/:id", (req, res, next) => {
 });
 // update a user in the database
 router.put("/db/:id", (req, res, next) => {
-    queries.updateUser(req.params.id, req.body).then(resolution => {
-        res.json({goal: resolution[0]});
+    queries.updateUser(req.params.id, req.body).then(user => {
+        res.json({users: user});
     }).catch(next);
 });
 
