@@ -24,10 +24,9 @@ module.exports = {
       .returning('*')
       .then(record => record[0]);
   },
-  deleteGoal(value) {
-    console.log('DELETING');
+  deleteGoal(id) {
     return database('goals')
-      .where('owner', value)
+      .where('id', id)
       .del();
   },
   // users management

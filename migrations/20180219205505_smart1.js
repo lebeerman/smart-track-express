@@ -5,7 +5,7 @@ exports.up = (knex, Promise) => {
     table.date('dueDate');
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.text('goal');
-    table.boolean('complete');
+    table.boolean('complete').defaultTo(false);
   });
 };
 

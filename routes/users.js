@@ -4,7 +4,7 @@ const queries = require('../queries');
 const oktaClient = require('../lib/oktaClient');
 /* Create a new User (register). */
 router.post('/', (req, res, next) => {
-  console.log('Made it to the user routes:',req.body);
+  console.log('Made it to the user routes:', req.body);
   if (!req.body) return res.sendStatus(400);
   const newUser = {
     profile: {
@@ -19,6 +19,7 @@ router.post('/', (req, res, next) => {
       }
     }
   };
+
   oktaClient
     .createUser(newUser)
     .then(user => {
@@ -35,39 +36,49 @@ router.post('/', (req, res, next) => {
       res.end();
     })
     .catch(next);
-    // .catch(err => {
-    //   console.log('In the oktaClient FAIL: ', err)
-    //   res.status(400);
-    //   // console.log(Object.keys(err))
-    //   res.send({message: err.message, stack: err.stack});
-    // });
+  // .catch(err => {
+  //   console.log('In the oktaClient FAIL: ', err)
+  //   res.status(400);
+  //   // console.log(Object.keys(err))
+  //   res.send({message: err.message, stack: err.stack});
+  // });
 });
 // Middleware --- all the routing needed for CRUD funcitonality!
 // List all the USERS
-router.get("/db", (req, res, next) => {
-    queries.listUsers().then(users => {
-        res.json({users:users});
-    }).catch(next);
+router.get('/db', (req, res, next) => {
+  queries
+    .listUsers()
+    .then(users => {
+      res.json({ users: users });
+    })
+    .catch(next);
 });
 // List a single user as res
-router.get("/db/:id", (req, res, next) => {
-    queries.readUser(req.params.id).then(users => {
-        users
-            ? res.json({users})
-            : res.sendStatus(404)
-    }).catch(next);
+router.get('/db/:id', (req, res, next) => {
+  queries
+    .readUser(req.params.id)
+    .then(users => {
+      users ? res.json({ users }) : res.sendStatus(404);
+    })
+    .catch(next);
 });
 // remove a goal by ID from the database
-router.delete("/db/:id", (req, res, next) => {
-    queries.deleteUser(req.params.id).then(() => {
-        res.sendStatus(204);
-    }).catch(next);
+router.delete('/db/:id', (req, res, next) => {
+  queries
+    .deleteUser(req.params.id)
+    .then(() => {
+      res.sendStatus(204);
+    })
+    .catch(next);
 });
 // update a user in the database
-router.put("/db/:id", (req, res, next) => {
-    queries.updateUser(req.params.id, req.body).then(user => {
-        res.json({users: user});
-    }).catch(next);
+router.put('/db/:id', (req, res, next) => {
+  queries
+    .updateUser(req.params.id, req.body)
+    .then(user => {
+      res.json({ users: user });
+    })
+    .catch(next);
 });
 
 module.exports = router;

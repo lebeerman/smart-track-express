@@ -17,10 +17,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -29,45 +29,55 @@ app.use('/api/users', users);
 
 // Middleware --- all the routing needed for CRUD funcitonality!
 // List all the Goals
-app.get("/goals", (request, response) => {
-    queries.listGoals().then(goals => {
-        response.json({goals});
-    }).catch(console.error);
+app.get('/goals', (request, response, next) => {
+  queries
+    .listGoals()
+    .then(goals => {
+      response.json({ goals });
+    })
+    .catch(next);
 });
 // List a single goal as response
-app.get("/goals/:id", (request, response) => {
-    queries.readGoals(request.params.id).then(goals => {
-        goals
-            ? response.json({goals})
-            : response.sendStatus(404)
-    }).catch(console.error);
+app.get('/goals/:id', (request, response, next) => {
+  queries
+    .readGoals(request.params.id)
+    .then(goals => {
+      goals ? response.json({ goals }) : response.sendStatus(404);
+    })
+    .catch(next);
 });
 // Add a goal to goals database
-app.post("/goals", (request, response) => {
-    console.log('CREATE',request.body)
-    queries.create(request.body).then(goal => {
-        response.status(201).json({goal});
-    }).catch(console.error);
+app.post('/goals', (request, response, next) => {
+  console.log('CREATE ', request.body);
+  queries
+    .create(request.body)
+    .then(goal => {
+      response.status(201).json({ goal });
+    })
+    .catch(next);
 });
 // remove a goal by ID from the database
-app.delete("/goals/:id", (request, response) => {
-    queries
-      .deleteGoal(request.params.id)
-      .then(() => {
-        response.sendStatus(204);
-      })
-      .catch(console.error);
+app.delete('/goals/:id', (request, response, next) => {
+  queries
+    .deleteGoal(request.params.id)
+    .then(() => {
+      response.status(201).json({ message: 'quitter' });
+    })
+    .catch(next);
 });
 // update a goal in the database
-app.put("/goals/:id", (request, response) => {
-    queries.updateGoal(request.params.id, request.body).then(goal => {
-        response.json({goal});
-    }).catch(console.error);
+app.put('/goals/:id', (request, response, next) => {
+  queries
+    .updateGoal(request.params.id, request.body)
+    .then(goal => {
+      response.json({ goal });
+    })
+    .catch(next);
 });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error('Not Found: ' + req.originalUrl);
   err.status = 404;
   next(err);
 });
@@ -81,10 +91,9 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   if (req.xhr) {
-   
     res.json({ message: err.message, stack: err.stack });
   } else {
-    res.render('error', {error: err});
+    res.render('error', { error: err });
   }
 });
 
