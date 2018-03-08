@@ -61,7 +61,7 @@ app.delete('/goals/:id', (request, response, next) => {
   queries
     .deleteGoal(request.params.id)
     .then(() => {
-      response.status(201).json({ message: 'quitter' });
+      response.status(200).json({ message: 'quitter' });
     })
     .catch(next);
 });
@@ -70,7 +70,7 @@ app.put('/goals/:id', (request, response, next) => {
   queries
     .updateGoal(request.params.id, request.body)
     .then(goal => {
-      response.json({ goal });
+      response.status(200).json({ goal });
     })
     .catch(next);
 });
