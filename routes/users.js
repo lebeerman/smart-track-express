@@ -36,12 +36,6 @@ router.post('/', (req, res, next) => {
       res.end();
     })
     .catch(next);
-  // .catch(err => {
-  //   console.log('In the oktaClient FAIL: ', err)
-  //   res.status(400);
-  //   // console.log(Object.keys(err))
-  //   res.send({message: err.message, stack: err.stack});
-  // });
 });
 // Middleware --- all the routing needed for CRUD funcitonality!
 // List all the USERS
